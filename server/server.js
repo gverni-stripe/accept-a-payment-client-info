@@ -38,6 +38,9 @@ app.get('/config', (req, res) => {
 });
 
 app.get('/create-payment-intent', async (req, res) => {
+  
+  const userAgent = req.get('user-agent')
+  const sourceIp = req.headers['x-forwarded-for'];
   // Create a PaymentIntent with the amount, currency, and a payment method type.
   //
   // See the documentation [0] for the full list of supported parameters.
@@ -47,7 +50,11 @@ app.get('/create-payment-intent', async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       currency: 'EUR',
       amount: 1999,
-      automatic_payment_methods: { enabled: true }
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+       userAgent, 
+       sourceIp
+    }
     });
 
     // Send publishable key and PaymentIntent details to client
